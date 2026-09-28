@@ -16,11 +16,22 @@ import (
 )
 
 func connect() (*sql.DB, error) {
-	bin, err := ioutil.ReadFile("/run/secrets/db-password")
-	if err != nil {
-		return nil, err
-	}
-	return sql.Open("mysql", fmt.Sprintf("root:%s@tcp(db:3306)/example", string(bin)))
+    password := os.Getenv("DB_PASSWORD")
+
+    if password == "" {
+        return nil, fmt.Errorf("DB_PASSWORD is not set")
+    }
+
+    return sql.Open(
+        "mysql",
+        fmt.Sprintf(
+            "root:%s@tcp(%s:%s)/%s",
+            password,
+            os.Getenv("DB_HOST"),
+            os.Getenv("DB_PORT"),
+            os.Getenv("DB_NAME"),
+        ),
+    )
 }
 
 func blogHandler(w http.ResponseWriter, r *http.Request) {
