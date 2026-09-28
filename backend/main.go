@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -25,7 +24,8 @@ func connect() (*sql.DB, error) {
     return sql.Open(
         "mysql",
         fmt.Sprintf(
-            "root:%s@tcp(%s:%s)/%s",
+            "%s:%s@tcp(%s:%s)/%s",
+            os.Getenv("DB_USER"),
             password,
             os.Getenv("DB_HOST"),
             os.Getenv("DB_PORT"),
